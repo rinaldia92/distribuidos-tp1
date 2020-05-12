@@ -29,10 +29,12 @@ def parse_config_params(config_file_path):
         raise ValueError("Key could not be parsed. Error: {}. Aborting server".format(e))
     return config_params
 
-def download(number, config):
+
+
+def download(number, url, config):
     request = {}
     clientDownloader = Client(config["host"], config["download_port"])
-    request["url"] = "https://github.com/githubtraining/hellogitworld.git"
+    request["url"] = url
     request["branch"] = "master"
     message = json.dumps(request)
     clientDownloader.send_message(message)
@@ -40,72 +42,40 @@ def download(number, config):
     logging.info("Download Thread {}. Response: {}".format(number, res))
     clientDownloader.close()
 
-def query(number, config):
+def query(number, regex, regex_path, config):
     request = {}
     clientRequest = Client(config["host"], config["query_port"])
-    request["regex"] = "hello"
-    request["regex_repos"] = "hello"
+    request["regex"] = regex
+    request["regex_repos"] = regex_path
     message = json.dumps(request)
     clientRequest.send_message(message)
     res = clientRequest.receive_message()
     logging.info("Query Thread {}. Response: {}".format(number, res))
     clientRequest.close()
 
-# def main():
-#     initialize_log()
-#     config = parse_config_params('config.json')
-#     threads = []
-#     for i in range(5):
-#         r = threading.Thread(target=query, args=(i, config))
-#         threads.append(r)
-#         r.start()
-#     for i in range(1):
-#         r = threading.Thread(target=download, args=(i,config))
-#         threads.append(r)
-#         r.start() 
-#     for i in range(5, 15):
-#         r = threading.Thread(target=query, args=(i, config))
-#         threads.append(r)
-#         r.start()
-
-#     for e in threads:
-#         e.join()
-
-DOWNLOAD = '1'
-REQUEST = '2'
-
 def main():
+    initialize_log()
     config = parse_config_params('config.json')
-    print(config)
-    time.sleep(0.5)
-    while True:
-        request = {}
-        print('menu')
-        option = input("Seleccione opcion: ")
-        if option == DOWNLOAD:
-            clientDownloader = Client(config["host"], config["download_port"])
-            print('Opcion 1 seleccionada')
-            request["url"] = input('Ingrese url de repositorio: ')
-            request["branch"] = input('Ingrese branch: ')
-            message = json.dumps(request)
-            clientDownloader.send_message(message)
-            res = clientDownloader.receive_message()
-            print(res)
-            clientDownloader.close()
-            continue
-        if option == REQUEST:
-            print('Opcion 2 seleccionada')
-            clientRequest = Client(config["host"], config["query_port"])
-            request["regex"] = input('Ingrese regex a buscar: ')
-            request["regex_repos"] = input('Ingrese regex de repositorios a buscar: ')
-            message = json.dumps(request)
-            clientRequest.send_message(message)
-            res = clientRequest.receive_message()
-            print(res)
-            clientRequest.close()
-            continue
-        print('Otra opcion seleccionada')
-        break
+    threads = []
+
+    for i in range(2):
+        r = threading.Thread(target=download, args=(i, "https://github.com/rinaldia92/TDA2",config))
+        threads.append(r)
+        r.start() 
+    for i in range(5):
+        r = threading.Thread(target=query, args=(i, "hello", "hello", config))
+        threads.append(r)
+        r.start()
+    for i in range(2):
+        r = threading.Thread(target=download, args=(i, "https://github.com/githubtraining/hellogitworld.git",config))
+        threads.append(r)
+        r.start() 
+    for i in range(5, 15):
+        r = threading.Thread(target=query, args=(i, "hello", "hello",config))
+        threads.append(r)
+        r.start()
+
+
 
 def initialize_log():
 	"""

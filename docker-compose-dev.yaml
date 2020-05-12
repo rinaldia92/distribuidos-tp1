@@ -58,23 +58,23 @@ services:
         ipv4_address: 172.24.125.4
     depends_on:
       - server
-  # client2:
-  #   container_name: client2
-  #   image: client:latest
-  #   entrypoint: python3 /main.py
-  #   stdin_open: true
-  #   tty: true
-  #   environment:
-  #     - SERVER_HOST=server
-  #     - SERVER_DOWNLOAD_PORT=12345
-  #     - SERVER_QUERY_PORT=12346
-  #   volumes:
-  #     - ./client/config.json:/config.json:rw
-  #   networks:
-  #     testing_net:
-  #       ipv4_address: 172.24.125.5
-  #   depends_on:
-  #     - server
+  client2:
+    container_name: client2
+    image: client:latest
+    entrypoint: python3 /main.py
+    stdin_open: true
+    tty: true
+    environment:
+      - SERVER_HOST=server
+      - SERVER_DOWNLOAD_PORT=12345
+      - SERVER_QUERY_PORT=12346
+    volumes:
+      - ./client/config.json:/config.json:rw
+    networks:
+      testing_net:
+        ipv4_address: 172.24.125.5
+    depends_on:
+      - server
 
 networks:
   testing_net:
