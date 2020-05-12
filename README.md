@@ -40,7 +40,6 @@ La arquitectura propuesta para este trabajo consiste en un servidor encargado de
 
 #### Server
 
-![Alt text](/images/robustez-server.svg)
 <img src="/images/robustez-server.svg">
 
 El servidor posee 4 tipos de controladores para distribuir el procesamiento:
@@ -53,7 +52,6 @@ Habrá tantas colas de resultados como threads que ejecuten el controlador de pe
 
 #### Procesador
 
-![Alt text](/images/robustez-procesador.svg)
 <img src="/images/robustez-procesador.svg">
 
 El procesador consta de 7 tipos de controladores (de los cuales 3 se muestran separados de dicho grafico):
@@ -68,10 +66,8 @@ Los otros dos controladores son:
 * garbage_collector_controller: cada cierto tiempo, lee el archivo `repositories_list` y busca los repositorios con `status = oldest`, elimina dichos repositorios y actualiza `repositories_list` dejando solo los demas repositorios.
 * thread_monitor_controller: se encarga de chequear si los demas threads estan en funcionamiento, sino para a todos.
 
-![Alt text](/images/robustez-monitor.svg)
 <img src="/images/robustez-monitor.svg">
 
-![Alt text](/images/robustez-garbage-collector.svg)
 <img src="/images/robustez-garbage-collector.svg">
 
 
@@ -79,12 +75,10 @@ El archivo `repositories_list` guarda el nombre del repositorio, branch, el nomb
 
 ### 2.2- Diagrama de actividades
 
-![Alt text](/images/actividades-procesador.svg)
 <img src="/images/actividades-procesador.svg">
 
 
 
-![Alt text](/images/actividades-server.svg)
 <img src="/images/actividades-server.svg">
 
 
@@ -92,7 +86,6 @@ El archivo `repositories_list` guarda el nombre del repositorio, branch, el nomb
 
 En este diagrama se observan las 4 distintas clases que se utilizaron. Pero no hay interaccion entre ellas directamente, sino que son manejadas a traves de los distintos controladores.
 
-![Alt text](/images/clases.svg)
 <img src="/images/clases.svg">
 
 ## 3- Codigo
