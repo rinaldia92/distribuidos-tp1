@@ -31,7 +31,7 @@ def parse_config_params(config_file_path):
 
 
 
-    DOWNLOAD = '1'
+DOWNLOAD = '1'
 REQUEST = '2'
 
 def main():
