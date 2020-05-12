@@ -4,10 +4,12 @@ import os
 import logging
 import json
 import threading
+import time
 from queue import Queue
 from common.server import Server
 from common.lock import Lock
-from common.controllers import query_controller, grep_files_controller, download_controller, update_repositories_controller, monitor, garbage_collector
+from common.thread import Thread
+from common.controllers import query_controller, grep_files_controller, download_controller, update_repositories_controller, monitor, garbage_collector, monitor_threads_controller
 
 REPOSITORIES_FOLDER = "./repositories/"
 REPOSITORIES_FILE = "./repositories/repositories_list"
@@ -52,13 +54,25 @@ def main():
 	server_download = Server(config_params["download_port"], config_params["listen_backlog"])
 	server_request = Server(config_params["query_port"], config_params["listen_backlog"])
 
-	threading.Thread(target=query_controller, args=(server_request, repos_search_queue, REPOSITORIES_FILE ,lock)).start()
-	threading.Thread(target=grep_files_controller, args=(config_params["host"], config_params["grep_results_port"], repos_search_queue, REPOSITORIES_FOLDER)).start()
-	threading.Thread(target=download_controller, args=(server_download, new_repos_queue)).start()
-	threading.Thread(target=update_repositories_controller, args=(REPOSITORIES_FILE, new_repos_queue, lock)).start()
-	threading.Thread(target=monitor, args=(new_repos_queue, repos_search_queue, config_params["monitor_time"])).start()
-	threading.Thread(target=garbage_collector, args=(REPOSITORIES_FOLDER, REPOSITORIES_FILE, config_params["g_c_time"], lock)).start()
+	threads = []
 
+	threads.append(Thread(query_controller, (server_request, repos_search_queue, REPOSITORIES_FILE ,lock)))
+	threads.append(Thread(grep_files_controller, (config_params["host"], config_params["grep_results_port"], repos_search_queue, REPOSITORIES_FOLDER)))
+	threads.append(Thread(download_controller, (server_download, new_repos_queue)))
+	threads.append(Thread(update_repositories_controller, (REPOSITORIES_FILE, new_repos_queue, lock)))
+	threads.append(Thread(monitor, (new_repos_queue, repos_search_queue, config_params["monitor_time"])))
+	threads.append(Thread(garbage_collector, (REPOSITORIES_FOLDER, REPOSITORIES_FILE, config_params["g_c_time"], lock)))
+
+	for thread in threads:
+		thread.start()
+	
+	while True:
+		time.sleep(1)
+		killed = monitor_threads_controller(threads)
+		if killed:
+			break
+
+	os._exit(0)
 
 
 def initialize_log():
@@ -75,5 +89,6 @@ def initialize_log():
 	)
 
 
-if __name__== "__main__":
-	main()
+# if __name__== "__main__":
+# 	main()
+main()

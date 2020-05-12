@@ -51,61 +51,61 @@ def query(number, config):
     logging.info("Query Thread {}. Response: {}".format(number, res))
     clientRequest.close()
 
-def main():
-    initialize_log()
-    config = parse_config_params('config.json')
-    threads = []
-    for i in range(5):
-        r = threading.Thread(target=query, args=(i, config))
-        threads.append(r)
-        r.start()
-    for i in range(1):
-        r = threading.Thread(target=download, args=(i,config))
-        threads.append(r)
-        r.start() 
-    for i in range(5, 15):
-        r = threading.Thread(target=query, args=(i, config))
-        threads.append(r)
-        r.start()
-
-    for e in threads:
-        e.join()
-
-# DOWNLOAD = '1'
-# REQUEST = '2'
-
 # def main():
+#     initialize_log()
 #     config = parse_config_params('config.json')
-#     print(config)
-#     time.sleep(0.5)
-#     while True:
-#         request = {}
-#         print('menu')
-#         option = input("Seleccione opcion: ")
-#         if option == DOWNLOAD:
-#             clientDownloader = Client(config["host"], config["download_port"])
-#             print('Opcion 1 seleccionada')
-#             request["url"] = input('Ingrese url de repositorio: ')
-#             request["branch"] = input('Ingrese branch: ')
-#             message = json.dumps(request)
-#             clientDownloader.send_message(message)
-#             res = clientDownloader.receive_message()
-#             print(res)
-#             clientDownloader.close()
-#             continue
-#         if option == REQUEST:
-#             print('Opcion 2 seleccionada')
-#             clientRequest = Client(config["host"], config["query_port"])
-#             request["regex"] = input('Ingrese regex a buscar: ')
-#             request["regex_repos"] = input('Ingrese regex de repositorios a buscar: ')
-#             message = json.dumps(request)
-#             clientRequest.send_message(message)
-#             res = clientRequest.receive_message()
-#             print(res)
-#             clientRequest.close()
-#             continue
-#         print('Otra opcion seleccionada')
-#         break
+#     threads = []
+#     for i in range(5):
+#         r = threading.Thread(target=query, args=(i, config))
+#         threads.append(r)
+#         r.start()
+#     for i in range(1):
+#         r = threading.Thread(target=download, args=(i,config))
+#         threads.append(r)
+#         r.start() 
+#     for i in range(5, 15):
+#         r = threading.Thread(target=query, args=(i, config))
+#         threads.append(r)
+#         r.start()
+
+#     for e in threads:
+#         e.join()
+
+DOWNLOAD = '1'
+REQUEST = '2'
+
+def main():
+    config = parse_config_params('config.json')
+    print(config)
+    time.sleep(0.5)
+    while True:
+        request = {}
+        print('menu')
+        option = input("Seleccione opcion: ")
+        if option == DOWNLOAD:
+            clientDownloader = Client(config["host"], config["download_port"])
+            print('Opcion 1 seleccionada')
+            request["url"] = input('Ingrese url de repositorio: ')
+            request["branch"] = input('Ingrese branch: ')
+            message = json.dumps(request)
+            clientDownloader.send_message(message)
+            res = clientDownloader.receive_message()
+            print(res)
+            clientDownloader.close()
+            continue
+        if option == REQUEST:
+            print('Opcion 2 seleccionada')
+            clientRequest = Client(config["host"], config["query_port"])
+            request["regex"] = input('Ingrese regex a buscar: ')
+            request["regex_repos"] = input('Ingrese regex de repositorios a buscar: ')
+            message = json.dumps(request)
+            clientRequest.send_message(message)
+            res = clientRequest.receive_message()
+            print(res)
+            clientRequest.close()
+            continue
+        print('Otra opcion seleccionada')
+        break
 
 def initialize_log():
 	"""
