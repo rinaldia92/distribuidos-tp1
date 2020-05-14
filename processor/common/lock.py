@@ -11,14 +11,15 @@ class Lock:
         self.cond.release()
 
     def read_release(self):
-        with self.cond:
-            self.readers -= 1
-            if (self.readers == 0):
-                self.cond.notify_all()
+        self.cond.acquire()
+        self.readers -= 1
+        if self.readers == 0:
+            self.cond.notify_all()
+        self.cond.release()
 
     def write_acquire(self):
         self.cond.acquire()
-        if (self.readers > 0):
+        if self.readers > 0:
             self.cond.wait()
 
     def write_release(self):
