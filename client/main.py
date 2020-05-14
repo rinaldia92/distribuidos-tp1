@@ -59,7 +59,7 @@ def main():
     threads = []
 
     for i in range(2):
-        r = threading.Thread(target=download, args=(i, "https://github.com/rinaldia92/TDA2",config))
+        r = threading.Thread(target=download, args=(i, "https://github.com/rinaldia92/TDA2.git",config))
         threads.append(r)
         r.start() 
     for i in range(5):
