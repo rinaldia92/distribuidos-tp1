@@ -5,14 +5,29 @@ import logging
 import json
 import threading
 import time
-from queue import Queue
+from multiprocessing import Queue
 from common.server import Server
 from common.lock import Lock
-from common.thread import Thread
-from common.controllers import query_controller, grep_files_controller, download_controller, update_repositories_controller, monitor, garbage_collector, monitor_threads_controller
+from common.download_controller import DownloadController
+from common.grep_files_controller import GrepFilesController
+from common.query_controller import QueryController
+from common.update_repositories_controller import UpdateRepositoriesController
+from common.monitor_controller import MonitorController
+from common.garbage_collector import GarbageCollectorController
 
 REPOSITORIES_FOLDER = "./repositories/"
 REPOSITORIES_FILE = "./repositories/repositories_list"
+
+def monitor_processes_controller(processes):
+	kill_processes = False
+	for process in processes:
+		if not process.alive():
+			kill_processes = True
+			break
+	if kill_processes:
+		for process in processes:
+			process.stop()
+	return kill_processes
 
 def parse_config_params(config_file_path):
 	""" Parse env variables to find program config params
@@ -54,25 +69,25 @@ def main():
 	server_download = Server(config_params["download_port"], config_params["listen_backlog"])
 	server_request = Server(config_params["query_port"], config_params["listen_backlog"])
 
-	threads = []
+	processes = []
 
-	threads.append(Thread(query_controller, (server_request, repos_search_queue, REPOSITORIES_FILE ,lock)))
-	threads.append(Thread(grep_files_controller, (config_params["host"], config_params["grep_results_port"], repos_search_queue, REPOSITORIES_FOLDER)))
-	threads.append(Thread(download_controller, (server_download, new_repos_queue)))
-	threads.append(Thread(update_repositories_controller, (REPOSITORIES_FILE, new_repos_queue, lock)))
-	threads.append(Thread(monitor, (new_repos_queue, repos_search_queue, config_params["monitor_time"])))
-	threads.append(Thread(garbage_collector, (REPOSITORIES_FOLDER, REPOSITORIES_FILE, config_params["g_c_time"], lock)))
+	processes.append(QueryController(server_request, repos_search_queue, REPOSITORIES_FILE ,lock))
+	processes.append(GrepFilesController(config_params["host"], config_params["grep_results_port"], repos_search_queue, REPOSITORIES_FOLDER))
+	processes.append(DownloadController(server_download, new_repos_queue))
+	processes.append(UpdateRepositoriesController(REPOSITORIES_FILE, new_repos_queue, lock))
+	processes.append(MonitorController(new_repos_queue, repos_search_queue, config_params["monitor_time"]))
+	processes.append(GarbageCollectorController(REPOSITORIES_FOLDER, REPOSITORIES_FILE, config_params["g_c_time"], lock))
 
-	for thread in threads:
-		thread.start()
+	for process in processes:
+		process.start()
 	
 	while True:
 		time.sleep(1)
-		killed = monitor_threads_controller(threads)
+		killed = monitor_threads_controller(processes)
 		if killed:
 			break
 
-	os._exit(0)
+	return
 
 
 def initialize_log():

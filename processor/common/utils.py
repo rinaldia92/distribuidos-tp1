@@ -59,7 +59,7 @@ def repos_garbage_collector(folder, filename, lock):
         with open(filename, 'r') as file:
             json_file = json.load(file)
             for repo in json_file:
-                if repo["status"] == 'oldest':
+                if repo["status"] == 'older':
                     repos_to_remove.append(repo["complete_name"])
                 else:
                     actual_repos.append(repo)
