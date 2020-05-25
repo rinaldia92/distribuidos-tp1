@@ -83,7 +83,7 @@ def main():
 	
 	while True:
 		time.sleep(1)
-		killed = monitor_threads_controller(processes)
+		killed = monitor_processes_controller(processes)
 		if killed:
 			break
 

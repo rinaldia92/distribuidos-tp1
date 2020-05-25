@@ -5,10 +5,13 @@ import logging
 import json
 import threading
 import time
-from queue import Queue
+from multiprocessing import Queue
 from common.server import Server
-from common.thread import Thread
-from common.controllers import download_controller, query_controller, grep_results_controller, monitor_threads_controller	
+from common.process import Process
+from common.controllers import monitor_threads_controller
+from common.download_controller import DownloadController
+from common.grep_results_controller import GrepResultsController
+from common.query_controller import QueryController
 
 def parse_config_params(config_file_path):
 	""" Parse env variables to find program config params
@@ -48,18 +51,18 @@ def main():
 
 	queues = [Queue() for _ in range(config_params["listen_backlog"])]
 
-	threads = []
-	threads.append(Thread(download_controller, (server_downloads, config_params["host"], config_params["client_download_port"])))
+	processes = []
+	processes.append(DownloadController(server_downloads, config_params["host"], config_params["client_download_port"]))
 	for i in range(config_params["listen_backlog"]):
-		threads.append(Thread(query_controller, (server_query, config_params["host"], config_params["client_query_port"], queues[i], i)))
-	threads.append(Thread(grep_results_controller, (server_responses, queues)))
+		processes.append(QueryController(server_query, config_params["host"], config_params["client_query_port"], queues[i], i))
+	processes.append(GrepResultsController(server_responses, queues))
 
-	for thread in threads:
-		thread.start()
+	for process in processes:
+		process.start()
 	
 	while True:
 		time.sleep(1)
-		killed = monitor_threads_controller(threads)
+		killed = monitor_threads_controller(processes)
 		if killed:
 			break
 

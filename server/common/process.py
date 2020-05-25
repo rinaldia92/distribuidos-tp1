@@ -1,9 +1,9 @@
-import threading
+from multiprocessing import Process
 import logging
 
-class Thread:
+class Process:
     def __init__(self, method , arguments):
-        self._thread = threading.Thread(target=self._method, args=(method, arguments))
+        self._process = Process(target=self._method, args=(method, arguments))
         self._run = True
 
     def _method(self, method, args):
@@ -14,7 +14,7 @@ class Thread:
                 self._run = False
 
     def start(self):
-        self._thread.start()
+        self._process.start()
 
     def stop(self):
         self._run = False

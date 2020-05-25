@@ -18,7 +18,12 @@ class Server:
 
 
     def receive_message(self, conn):
-        return conn.recv(1000).decode('utf-8').rstrip()
+        msg = ''
+        character = ''
+        while character != '\n':
+            character = conn.recv(1).decode('utf-8')
+            msg = msg + character
+        return msg
 
     def close(self):
         self._server_socket.close()

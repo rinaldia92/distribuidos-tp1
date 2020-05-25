@@ -16,7 +16,12 @@ class Client:
 
 
     def receive_message(self):
-        return self._client_socket.recv(1000).decode('utf-8')
+        msg = ''
+        character = ''
+        while character != '\n':
+            character = self._client_socket.recv(1).decode('utf-8')
+            msg = msg + character
+        return msg
 
     def close(self):
         self._client_socket.close()

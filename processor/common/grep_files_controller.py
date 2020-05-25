@@ -19,12 +19,12 @@ class GrepFilesController:
                 }
                 try:
                     client_response = Client(host, port)
-                    client_response.send_message(json.dumps(message))
+                    client_response.send_message(json.dumps(message)+'\n')
                     client_response.close()
                     for res in results:
                         message["message"] = res
                         client_response = Client(host, port)
-                        client_response.send_message(json.dumps(message))
+                        client_response.send_message(json.dumps(message)+'\n')
                         client_response.close()	
                 except ConnectionRefusedError:
                     logging.error("Connection refused. Can't return grep results")
