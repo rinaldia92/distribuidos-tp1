@@ -31,49 +31,42 @@ def parse_config_params(config_file_path):
 
 
 
-def download(number, url, config):
-    request = {}
-    clientDownloader = Client(config["host"], config["download_port"])
-    request["url"] = url
-    request["branch"] = "master"
-    message = json.dumps(request)
-    clientDownloader.send_message(message)
-    res = clientDownloader.receive_message()
-    logging.info("Download Thread {}. Response: {}".format(number, res))
-    clientDownloader.close()
-
-def query(number, regex, regex_path, config):
-    request = {}
-    clientRequest = Client(config["host"], config["query_port"])
-    request["regex"] = regex
-    request["regex_repos"] = regex_path
-    message = json.dumps(request)
-    clientRequest.send_message(message)
-    res = clientRequest.receive_message()
-    logging.info("Query Thread {}. Response: {}".format(number, res))
-    clientRequest.close()
+DOWNLOAD = '1'
+REQUEST = '2'
 
 def main():
-    initialize_log()
     config = parse_config_params('config.json')
-    threads = []
+    time.sleep(0.5)
+    while True:
+        request = {}
+        print('Ingrese opcion 1 para descargar un repositorio')
+        print('Ingrese opcion 2 para buscar archivos')
+        option = input("Seleccione opcion: ")
+        if option == DOWNLOAD:
+            clientDownloader = Client(config["host"], config["download_port"])
+            print('Opcion 1 seleccionada')
+            request["url"] = input('Ingrese url de repositorio: ')
+            request["branch"] = input('Ingrese branch: ')
+            message = json.dumps(request)
+            clientDownloader.send_message(message)
+            res = clientDownloader.receive_message()
+            print(res)
+            clientDownloader.close()
+            continue
+        if option == REQUEST:
+            print('Opcion 2 seleccionada')
+            clientRequest = Client(config["host"], config["query_port"])
+            request["regex"] = input('Ingrese regex a buscar: ')
+            request["regex_repos"] = input('Ingrese regex de repositorios a buscar: ')
+            message = json.dumps(request)
+            clientRequest.send_message(message)
+            res = clientRequest.receive_message()
+            print(res)
+            clientRequest.close()
+            continue
+        print('Otra opcion seleccionada')
+        break
 
-    for i in range(2):
-        r = threading.Thread(target=download, args=(i, "https://github.com/rinaldia92/TDA2.git",config))
-        threads.append(r)
-        r.start() 
-    for i in range(5):
-        r = threading.Thread(target=query, args=(i, "hello", "hello", config))
-        threads.append(r)
-        r.start()
-    for i in range(2):
-        r = threading.Thread(target=download, args=(i, "https://github.com/githubtraining/hellogitworld.git",config))
-        threads.append(r)
-        r.start() 
-    for i in range(5, 15):
-        r = threading.Thread(target=query, args=(i, "hello", "hello",config))
-        threads.append(r)
-        r.start()
 
 def initialize_log():
 	"""

@@ -13,6 +13,7 @@ docker-image:
 
 docker-compose-up: docker-image
 	docker-compose -f docker-compose.yaml up -d --build
+	docker attach client1
 .PHONY: docker-compose-up
 
 docker-compose-down:
