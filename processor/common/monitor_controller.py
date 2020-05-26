@@ -1,7 +1,7 @@
+import time
+import logging
 from multiprocessing import Process, Event
 from common.controller import Controller
-import logging
-import time
 
 class MonitorController(Controller):
     def __init__(self, new_repos_queue, repos_search_queue, cron_time):

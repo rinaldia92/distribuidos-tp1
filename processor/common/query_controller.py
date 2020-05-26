@@ -1,7 +1,7 @@
+import json
 from multiprocessing import Process, Event
 from common.utils import grep_file
 from common.controller import Controller
-import json
 
 class QueryController(Controller):
     def __init__(self, server_request, repos_search_queue, repo_file, lock):

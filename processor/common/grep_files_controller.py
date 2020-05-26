@@ -1,8 +1,8 @@
+import json
 from multiprocessing import Process, Event
 from common.utils import grep_folders
 from common.dispatcher import Dispatcher
 from common.controller import Controller
-import json
 
 class GrepFilesController(Controller):
     def __init__(self, host, port, repos_search_queue, folder):

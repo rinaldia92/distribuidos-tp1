@@ -1,7 +1,7 @@
+import logging
 from multiprocessing import Process, Event
 from common.controller import Controller
 from common.dispatcher import Dispatcher
-import logging
 
 class DownloadController(Controller):
     def __init__(self, server_downloads, host, port):

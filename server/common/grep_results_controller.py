@@ -1,6 +1,6 @@
+import json
 from multiprocessing import Process, Event
 from common.controller import Controller
-import json
 
 class GrepResultsController(Controller):
     def __init__(self, server_responses, response_queues, queues_dict):

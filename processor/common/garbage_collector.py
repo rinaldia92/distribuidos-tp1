@@ -1,8 +1,8 @@
+import time
+import logging
 from multiprocessing import Process, Event
 from common.utils import repos_garbage_collector
 from common.controller import Controller
-import logging
-import time
 
 class GarbageCollectorController(Controller):
     def __init__(self, folder, file, cron_time, lock):

@@ -1,8 +1,8 @@
+import json
+import uuid
 from multiprocessing import Process, Event
 from common.utils import download
 from common.controller import Controller
-import json
-import uuid
 
 class DownloadController(Controller):
     def __init__(self, server_download, new_repos_queue):
