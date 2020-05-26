@@ -1,9 +1,10 @@
 from multiprocessing import Process
 from common.utils import grep_folders
 from common.client import Client
+from common.controller import Controller
 import json
 
-class GrepFilesController:
+class GrepFilesController(Controller):
     def __init__(self, host, port, repos_search_queue, folder):
         self._process = Process(target=self._method, args=(host, port, repos_search_queue, folder))
         self._run = True
@@ -19,24 +20,15 @@ class GrepFilesController:
                 }
                 try:
                     client_response = Client(host, port)
-                    client_response.send_message(json.dumps(message)+'\n')
+                    client_response.send_message(json.dumps(message))
                     client_response.close()
                     for res in results:
                         message["message"] = res
                         client_response = Client(host, port)
-                        client_response.send_message(json.dumps(message)+'\n')
+                        client_response.send_message(json.dumps(message))
                         client_response.close()	
                 except ConnectionRefusedError:
                     logging.error("Connection refused. Can't return grep results")
                     raise
             except:
                 self._run = False
-
-    def start(self):
-        self._process.start()
-
-    def stop(self):
-        self._run = False
-
-    def alive(self):
-        return self._run

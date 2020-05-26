@@ -1,8 +1,9 @@
 from multiprocessing import Process
+from common.controller import Controller
 import logging
 import time
 
-class MonitorController:
+class MonitorController(Controller):
     def __init__(self, new_repos_queue, repos_search_queue, cron_time):
         self._process = Process(target=self._method, args=(new_repos_queue, repos_search_queue, cron_time))
         self._run = True
@@ -15,12 +16,3 @@ class MonitorController:
                 logging.info("Pending queries: {}".format(repos_search_queue.qsize()))
             except:
                 self._run = False
-
-    def start(self):
-        self._process.start()
-
-    def stop(self):
-        self._run = False
-
-    def alive(self):
-        return self._run

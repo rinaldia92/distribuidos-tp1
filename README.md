@@ -75,6 +75,7 @@ El archivo `repositories_list` guarda el nombre del repositorio, branch, el nomb
 
 ### 2.2- Diagrama de actividades
 
+![Robustez Procesador](/images/actividades-procesador-fondo.svg)
 <img src="/images/actividades-procesador.svg">
 
 <img src="/images/actividades-server.svg">

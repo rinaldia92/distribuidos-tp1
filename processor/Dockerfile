@@ -6,5 +6,6 @@ RUN apk update \
  && rm -rf /var/cache/apk/*
 
 COPY processor /
+COPY common /common
 
 ENTRYPOINT ["/bin/sh"]

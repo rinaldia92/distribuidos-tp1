@@ -1,8 +1,9 @@
 from multiprocessing import Process
 from common.utils import grep_file
+from common.controller import Controller
 import json
 
-class QueryController:
+class QueryController(Controller):
     def __init__(self, server_request, repos_search_queue, repo_file, lock):
         self._process = Process(target=self._method, args=(server_request, repos_search_queue, repo_file, lock))
         self._run = True
@@ -10,8 +11,8 @@ class QueryController:
     def _method(self, server_request, repos_search_queue, repo_file, lock):
         while self._run:
             try:
-                conn, addr = server_request.accept_new_connection()
-                message = server_request.receive_message(conn)
+                middle = server_request.accept_new_connection()
+                message = middle.receive_message()
                 params = json.loads(message)
                 repos = grep_file(repo_file, params["regex_repos"], lock)
                 data = {
@@ -22,12 +23,3 @@ class QueryController:
                 repos_search_queue.put(data)
             except:
                 self._run = False
-
-    def start(self):
-        self._process.start()
-
-    def stop(self):
-        self._run = False
-
-    def alive(self):
-        return self._run

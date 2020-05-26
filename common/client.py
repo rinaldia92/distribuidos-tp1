@@ -12,16 +12,16 @@ class Client:
         Sending message to server
         """
         logging.info('Sending message')
-        print("Message:", message.encode("utf-8"))
-        self._client_socket.sendall(message.encode("utf-8"))
+        message_to_send = message + '\n'
+        self._client_socket.sendall(message_to_send.encode('utf-8'))
 
 
     def receive_message(self):
         msg = ''
         character = ''
         while character != '\n':
-            character = self._client_socket.recv(1).decode('utf-8')
             msg = msg + character
+            character = self._client_socket.recv(1).decode('utf-8')
         return msg
 
     def close(self):

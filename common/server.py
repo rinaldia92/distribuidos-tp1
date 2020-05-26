@@ -1,5 +1,6 @@
 import socket
 import logging
+from common.middleware import Middleware
 
 class Server:
     def __init__(self, port, listen_backlog):
@@ -9,25 +10,8 @@ class Server:
         self._server_socket.bind(('', port))
         self._server_socket.listen(listen_backlog)
 
-    def send_message(self, conn, message):
-        """
-        Sending message to server
-        """
-        logging.info('Sending message')
-        conn.sendall(message.encode('utf-8'))
-
-
-    def receive_message(self, conn):
-        msg = ''
-        character = ''
-        while character != '\n':
-            character = conn.recv(1).decode('utf-8')
-            msg = msg + character
-        return msg
-
     def close(self):
         self._server_socket.close()
-
 
 
     def accept_new_connection(self):
@@ -40,6 +24,6 @@ class Server:
 
         # Connection arrived
         logging.info("Proceed to accept new connections")
-        c, addr = self._server_socket.accept()
+        conn, addr = self._server_socket.accept()
         logging.info('Got connection from {}'.format(addr))
-        return c, addr
+        return Middleware(conn)

@@ -14,20 +14,10 @@ from common.query_controller import QueryController
 from common.update_repositories_controller import UpdateRepositoriesController
 from common.monitor_controller import MonitorController
 from common.garbage_collector import GarbageCollectorController
+from common.process_controller import ProcessController
 
 REPOSITORIES_FOLDER = "./repositories/"
 REPOSITORIES_FILE = "./repositories/repositories_list"
-
-def monitor_processes_controller(processes):
-	kill_processes = False
-	for process in processes:
-		if not process.alive():
-			kill_processes = True
-			break
-	if kill_processes:
-		for process in processes:
-			process.stop()
-	return kill_processes
 
 def parse_config_params(config_file_path):
 	""" Parse env variables to find program config params
@@ -81,9 +71,11 @@ def main():
 	for process in processes:
 		process.start()
 	
+	process_controller = ProcessController(processes)
+
 	while True:
 		time.sleep(1)
-		killed = monitor_processes_controller(processes)
+		killed = process_controller.monitor()
 		if killed:
 			break
 

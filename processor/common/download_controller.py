@@ -1,9 +1,10 @@
 from multiprocessing import Process
 from common.utils import download
+from common.controller import Controller
 import json
 import uuid
 
-class DownloadController:
+class DownloadController(Controller):
     def __init__(self, server_download, new_repos_queue):
         self._process = Process(target=self._method, args=(server_download, new_repos_queue))
         self._run = True
@@ -11,8 +12,8 @@ class DownloadController:
     def _method(self, server_download, new_repos_queue):
         while self._run:
             try:
-                conn, addr = server_download.accept_new_connection()
-                message = server_download.receive_message(conn)
+                middle = server_download.accept_new_connection()
+                message = middle.receive_message()
                 params = json.loads(message)
                 branch = params["branch"]
                 name = params["url"].split('/')[-1][:-4]
@@ -27,12 +28,3 @@ class DownloadController:
                 new_repos_queue.put(register)
             except:
                 self._run = False
-
-    def start(self):
-        self._process.start()
-
-    def stop(self):
-        self._run = False
-
-    def alive(self):
-        return self._run

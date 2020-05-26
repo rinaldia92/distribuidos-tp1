@@ -1,7 +1,8 @@
 from multiprocessing import Process
 from common.utils import save_to_file
+from common.controller import Controller
 
-class UpdateRepositoriesController:
+class UpdateRepositoriesController(Controller):
     def __init__(self, file, new_repos_queue, lock):
         self._process = Process(target=self._method, args=(file, new_repos_queue, lock))
         self._run = True
@@ -13,12 +14,3 @@ class UpdateRepositoriesController:
                 save_to_file(file, register, lock)
             except:
                 self._run = False
-
-    def start(self):
-        self._process.start()
-
-    def stop(self):
-        self._run = False
-
-    def alive(self):
-        return self._run

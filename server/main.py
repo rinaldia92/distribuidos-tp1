@@ -7,11 +7,10 @@ import threading
 import time
 from multiprocessing import Queue
 from common.server import Server
-from common.process import Process
-from common.controllers import monitor_threads_controller
 from common.download_controller import DownloadController
 from common.grep_results_controller import GrepResultsController
 from common.query_controller import QueryController
+from common.process_controller import ProcessController
 
 def parse_config_params(config_file_path):
 	""" Parse env variables to find program config params
@@ -60,13 +59,15 @@ def main():
 	for process in processes:
 		process.start()
 	
+	process_controller = ProcessController(processes)
+
 	while True:
 		time.sleep(1)
-		killed = monitor_threads_controller(processes)
+		killed = process_controller.monitor()
 		if killed:
 			break
 
-	os._exit(0)
+	return
 
 def initialize_log():
 	"""
