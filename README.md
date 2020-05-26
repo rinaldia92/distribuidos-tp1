@@ -75,7 +75,6 @@ El archivo `repositories_list` guarda el nombre del repositorio, branch, el nomb
 
 ### 2.2- Diagrama de actividades
 
-![Robustez Procesador](/images/actividades-procesador-fondo.svg)
 <img src="/images/actividades-procesador.svg">
 
 <img src="/images/actividades-server.svg">
@@ -85,7 +84,9 @@ El archivo `repositories_list` guarda el nombre del repositorio, branch, el nomb
 
 En este diagrama se observan las 4 distintas clases que se utilizaron. Pero no hay interaccion entre ellas directamente, sino que son manejadas a traves de los distintos controladores.
 
-<img src="/images/clases.svg">
+<img src="/images/clases-server.svg">
+
+<img src="/images/clases-procesador.svg">
 
 ## 3- Codigo
 
