@@ -1,4 +1,4 @@
-from multiprocessing import Process
+from multiprocessing import Process, Event
 from common.utils import grep_file
 from common.controller import Controller
 import json
@@ -6,7 +6,7 @@ import json
 class QueryController(Controller):
     def __init__(self, server_request, repos_search_queue, repo_file, lock):
         self._process = Process(target=self._method, args=(server_request, repos_search_queue, repo_file, lock))
-        self._run = True
+        self._run = Event()
 
     def _method(self, server_request, repos_search_queue, repo_file, lock):
         while self._run:
@@ -16,10 +16,10 @@ class QueryController(Controller):
                 params = json.loads(message)
                 repos = grep_file(repo_file, params["regex_repos"], lock)
                 data = {
-                    "thread_id": params["thread_id"],
+                    "process_id": params["process_id"],
                     "regex": params["regex"],
                     "paths": repos
                 }
                 repos_search_queue.put(data)
             except:
-                self._run = False
+                self._run.clear()

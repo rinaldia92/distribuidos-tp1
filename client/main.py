@@ -2,7 +2,7 @@ import os
 import time
 import logging
 import json
-from common.client import Client
+from client import Client
 import threading
 
 def parse_config_params(config_file_path):
@@ -74,8 +74,6 @@ def main():
         r = threading.Thread(target=query, args=(i, "hello", "hello",config))
         threads.append(r)
         r.start()
-
-
 
 def initialize_log():
 	"""

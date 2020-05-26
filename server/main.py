@@ -50,15 +50,24 @@ def main():
 
 	queues = [Queue() for _ in range(config_params["listen_backlog"])]
 
-	processes = []
-	processes.append(DownloadController(server_downloads, config_params["host"], config_params["client_download_port"]))
-	for i in range(config_params["listen_backlog"]):
-		processes.append(QueryController(server_query, config_params["host"], config_params["client_query_port"], queues[i], i))
-	processes.append(GrepResultsController(server_responses, queues))
+	queues_dict = {}
 
-	for process in processes:
-		process.start()
-	
+	processes = []
+
+	download_controller = DownloadController(server_downloads, config_params["host"], config_params["client_download_port"])
+	download_controller.start()
+	processes.append(download_controller)
+
+	for i in range(config_params["listen_backlog"]):
+		query_controller = QueryController(server_query, config_params["host"], config_params["client_query_port"], queues[i])
+		query_controller.start()
+		queues_dict[query_controller.get_pid()] = i
+		processes.append(query_controller)
+
+	grep_results_controller = GrepResultsController(server_responses, queues, queues_dict) 
+	grep_results_controller.start()
+	processes.append(grep_results_controller)
+
 	process_controller = ProcessController(processes)
 
 	while True:

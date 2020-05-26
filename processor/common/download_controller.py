@@ -1,4 +1,4 @@
-from multiprocessing import Process
+from multiprocessing import Process, Event
 from common.utils import download
 from common.controller import Controller
 import json
@@ -7,7 +7,7 @@ import uuid
 class DownloadController(Controller):
     def __init__(self, server_download, new_repos_queue):
         self._process = Process(target=self._method, args=(server_download, new_repos_queue))
-        self._run = True
+        self._run = Event()
 
     def _method(self, server_download, new_repos_queue):
         while self._run:
@@ -27,4 +27,4 @@ class DownloadController(Controller):
                 register = { "name": name, "branch": branch, "complete_name": complete_name }
                 new_repos_queue.put(register)
             except:
-                self._run = False
+                self._run.clear()
